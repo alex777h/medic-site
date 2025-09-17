@@ -1,38 +1,24 @@
-
 "use client";
+
+
 import { useEffect, useState } from "react";
 import HeaderContacts from "../components/HeaderContacts";
 
-interface Doctor {
+interface NewsItem {
   _id: string;
-  name: string;
-  specialty: string;
-  phone: string;
-  email: string;
-  description?: string;
+  title: string;
+  date: string;
+  text: string;
 }
 
-
-export default function DoctorsPage() {
-  const [doctors, setDoctors] = useState<Doctor[]>([]);
-  const [search, setSearch] = useState("");
+export default function News() {
+  const [news, setNews] = useState<NewsItem[]>([]);
 
   useEffect(() => {
-    fetch("/api/doctors")
+    fetch("/api/admin/news")
       .then((res) => res.json())
-      .then(setDoctors);
+      .then((data) => setNews(data));
   }, []);
-
-  const filtered = doctors.filter((doc) => {
-    const q = search.toLowerCase();
-    return (
-      doc.name.toLowerCase().includes(q) ||
-      doc.specialty.toLowerCase().includes(q) ||
-      doc.phone.toLowerCase().includes(q) ||
-      doc.email.toLowerCase().includes(q) ||
-      (doc.description && doc.description.toLowerCase().includes(q))
-    );
-  });
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -41,7 +27,7 @@ export default function DoctorsPage() {
           <span className="text-2xl font-bold">Медицинский центр "Здоровье"</span>
           <HeaderContacts />
         </div>
-      </header>
+  </header>
       <nav className="w-full bg-blue-100 text-blue-900 py-2 shadow-inner">
         <div className="container mx-auto flex flex-wrap justify-center gap-6 text-base">
           <a href="/" className="hover:underline font-medium">Главная</a>
@@ -50,26 +36,18 @@ export default function DoctorsPage() {
           <a href="/doctors" className="hover:underline font-medium">Врачи</a>
           <a href="/contacts" className="hover:underline font-medium">Контакты</a>
           <a href="/faq" className="hover:underline font-medium">FAQ</a>
+          <a href="/news" className="hover:underline font-medium">Новости</a>
         </div>
       </nav>
       <main className="flex flex-1 flex-col items-center justify-center p-8">
-        <h2 className="text-3xl font-bold mb-4">Наши врачи</h2>
-        <input
-          type="text"
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          placeholder="Поиск по имени, специальности, телефону, email или описанию"
-          className="mb-6 w-full max-w-2xl border rounded p-2"
-        />
-        <div className="w-full max-w-2xl grid gap-4">
-          {filtered.length === 0 && <div className="text-gray-400">Нет врачей</div>}
-          {filtered.map((doc) => (
-            <div key={doc._id} className="border rounded p-4 shadow">
-              <h3 className="text-xl font-semibold">{doc.name}</h3>
-              <p className="text-gray-700">{doc.specialty}</p>
-              <p>Телефон: {doc.phone}</p>
-              <p>Email: {doc.email}</p>
-              {doc.description && <p>{doc.description}</p>}
+        <h2 className="text-3xl font-bold mb-6">Новости</h2>
+        <div className="max-w-2xl w-full space-y-6">
+          {news.length === 0 && <div className="text-gray-400">Нет новостей</div>}
+          {news.map((item) => (
+            <div className="border rounded p-4 shadow bg-white" key={item._id}>
+              <h3 className="font-semibold text-lg mb-1">{item.title}</h3>
+              <div className="text-gray-700" dangerouslySetInnerHTML={{ __html: item.text }} />
+              <span className="text-xs text-gray-400">{item.date}</span>
             </div>
           ))}
         </div>

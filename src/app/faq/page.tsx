@@ -3,36 +3,21 @@
 import { useEffect, useState } from "react";
 import HeaderContacts from "../components/HeaderContacts";
 
-interface Doctor {
+interface FaqItem {
   _id: string;
-  name: string;
-  specialty: string;
-  phone: string;
-  email: string;
-  description?: string;
+  q: string;
+  a: string;
 }
 
-
-export default function DoctorsPage() {
-  const [doctors, setDoctors] = useState<Doctor[]>([]);
-  const [search, setSearch] = useState("");
+export default function FAQ() {
+  const [questions, setQuestions] = useState<FaqItem[]>([]);
+  const [open, setOpen] = useState<number | null>(null);
 
   useEffect(() => {
-    fetch("/api/doctors")
+    fetch("/api/admin/faq")
       .then((res) => res.json())
-      .then(setDoctors);
+      .then((data) => setQuestions(data));
   }, []);
-
-  const filtered = doctors.filter((doc) => {
-    const q = search.toLowerCase();
-    return (
-      doc.name.toLowerCase().includes(q) ||
-      doc.specialty.toLowerCase().includes(q) ||
-      doc.phone.toLowerCase().includes(q) ||
-      doc.email.toLowerCase().includes(q) ||
-      (doc.description && doc.description.toLowerCase().includes(q))
-    );
-  });
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -53,23 +38,24 @@ export default function DoctorsPage() {
         </div>
       </nav>
       <main className="flex flex-1 flex-col items-center justify-center p-8">
-        <h2 className="text-3xl font-bold mb-4">Наши врачи</h2>
-        <input
-          type="text"
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          placeholder="Поиск по имени, специальности, телефону, email или описанию"
-          className="mb-6 w-full max-w-2xl border rounded p-2"
-        />
-        <div className="w-full max-w-2xl grid gap-4">
-          {filtered.length === 0 && <div className="text-gray-400">Нет врачей</div>}
-          {filtered.map((doc) => (
-            <div key={doc._id} className="border rounded p-4 shadow">
-              <h3 className="text-xl font-semibold">{doc.name}</h3>
-              <p className="text-gray-700">{doc.specialty}</p>
-              <p>Телефон: {doc.phone}</p>
-              <p>Email: {doc.email}</p>
-              {doc.description && <p>{doc.description}</p>}
+        <h2 className="text-3xl font-bold mb-6">Часто задаваемые вопросы</h2>
+        <div className="max-w-2xl w-full space-y-4">
+          {questions.length === 0 && <div className="text-gray-400">Нет вопросов</div>}
+          {questions.map((item, idx) => (
+            <div key={item._id} className="border rounded shadow">
+              <button
+                className="w-full text-left px-4 py-3 font-semibold text-lg flex justify-between items-center focus:outline-none"
+                onClick={() => setOpen(open === idx ? null : idx)}
+                aria-expanded={open === idx}
+              >
+                {item.q}
+                <span className="ml-2">{open === idx ? "-" : "+"}</span>
+              </button>
+              {open === idx && (
+                <div className="px-4 pb-4 text-gray-700 animate-fade-in">
+                  {item.a}
+                </div>
+              )}
             </div>
           ))}
         </div>
