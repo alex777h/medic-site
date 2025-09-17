@@ -16,6 +16,8 @@ export default function Admin() {
           <a href="/admin/contacts" className="hover:underline font-medium">Контакты</a>
           <a href="/admin/faq" className="hover:underline font-medium">FAQ</a>
           <a href="/admin/news" className="hover:underline font-medium">Новости</a>
+          <a href="/admin/feedbacks" className="hover:underline font-medium">Добавить отклик</a>
+          <a href="/admin/feedbacks/all" className="hover:underline font-medium">Все отклики</a>
         </div>
       </nav>
       <main className="flex flex-1 flex-col items-center justify-center p-8">

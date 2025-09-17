@@ -1,5 +1,29 @@
 "use client";
+
+// Кнопка "Вверх"
+function ScrollToTopButton() {
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const onScroll = () => {
+      setVisible(window.scrollY > 200);
+    };
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+  return (
+    <button
+      onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+      className={`fixed bottom-8 right-8 z-50 p-0.5 rounded-full shadow-lg bg-gradient-to-br from-cyan-500 to-blue-700 hover:from-blue-700 hover:to-cyan-400 transition-all duration-300 border-2 border-white/70 focus:outline-none focus:ring-2 focus:ring-cyan-400 ${visible ? 'opacity-100' : 'opacity-0 pointer-events-none'} group`}
+      aria-label="Наверх"
+    >
+      <span className="flex items-center justify-center w-12 h-12">
+        <svg className="w-7 h-7 text-white group-hover:text-cyan-100 transition" fill="none" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+      </span>
+    </button>
+  );
+}
 import { useEffect, useState } from "react";
+
 import HeaderContacts from "../components/HeaderContacts";
 
 interface AmbulatoryData {
@@ -38,9 +62,15 @@ export default function Ambulatory() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <header className="w-full bg-blue-700 text-white py-4 shadow">
-        <div className="container mx-auto flex flex-wrap items-center justify-center gap-4">
-          <span className="text-2xl font-bold">Медицинский центр "Здоровье"</span>
+      <ScrollToTopButton />
+      <header className="w-full bg-gradient-to-r from-blue-800 via-blue-600 to-cyan-500 text-white py-6 shadow-lg relative z-10">
+        <div className="container mx-auto flex flex-wrap items-center justify-between gap-4 px-4">
+          <div className="flex items-center gap-3">
+            <span className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-white/20 shadow-md mr-2">
+              <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 32 32' className="w-8 h-8 text-white"><rect width="32" height="32" rx="16" fill="#2563eb"/><path d="M16 8v16M8 16h16" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"/></svg>
+            </span>
+            <span className="text-3xl font-extrabold tracking-tight drop-shadow-lg">Медицинский центр "Здоровье"</span>
+          </div>
           <HeaderContacts />
         </div>
       </header>
@@ -66,18 +96,16 @@ export default function Ambulatory() {
         {loading ? (
           <div className="text-gray-500">Загрузка...</div>
         ) : (
-          <div className="max-w-xl w-full space-y-8">
-            {filtered.length === 0 && <div className="text-gray-400">Нет амбулаторий</div>}
+          <div className="max-w-4xl w-full grid grid-cols-1 md:grid-cols-2 gap-6">
+            {filtered.length === 0 && <div className="text-gray-400 col-span-2">Нет амбулаторий</div>}
             {filtered.map((data, idx) => (
-              <div key={idx} className="border rounded p-4 bg-white shadow text-center text-lg space-y-2">
-                <div className="font-bold text-2xl mb-2">{data.name}</div>
-                <div>Адрес: {data.address}</div>
-                <div>Телефон: {data.phone}</div>
-                <div>Широта: {data.lat}</div>
-                <div>Долгота: {data.lng}</div>
-                <div className="mb-2">{data.text}</div>
+              <div key={idx} className="flex flex-col items-center border rounded-xl shadow-lg bg-white p-6 transition hover:shadow-2xl">
+                <div className="text-2xl font-bold mb-2 text-blue-700 text-center">{data.name}</div>
+                <div className="text-gray-700 text-center mb-1">{data.address}</div>
+                <div className="text-gray-700 text-sm mb-1">Телефон: <span className="font-mono">{data.phone}</span></div>
+                <div className="text-gray-600 text-sm mb-2 text-center">{data.text}</div>
                 {data.lat && data.lng && !isNaN(parseFloat(data.lat)) && !isNaN(parseFloat(data.lng)) ? (
-                  <div className="w-full h-64 rounded overflow-hidden border mt-4">
+                  <div className="w-full h-56 rounded overflow-hidden border mt-2">
                     <iframe
                       title={`Карта амбулатории ${data.name}`}
                       width="100%"
@@ -97,9 +125,18 @@ export default function Ambulatory() {
           </div>
         )}
       </main>
-      <footer className="w-full bg-gray-100 text-gray-600 py-4 mt-auto shadow-inner">
-        <div className="container mx-auto text-center text-sm">
-          &copy; {new Date().getFullYear()} Медицинский центр "Здоровье". Все права защищены.
+      <footer className="w-full bg-gradient-to-r from-blue-900 via-blue-700 to-cyan-600 text-white py-6 mt-auto shadow-inner border-t border-blue-800/30">
+        <div className="container mx-auto flex flex-col md:flex-row items-center justify-between px-4 gap-2 text-sm">
+          <div className="flex items-center gap-2">
+            <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 32 32' className="w-6 h-6 text-cyan-200"><rect width="32" height="32" rx="16" fill="#2563eb"/><path d="M16 8v16M8 16h16" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"/></svg>
+            <span className="font-semibold">Медицинский центр "Здоровье"</span>
+          </div>
+          <div className="flex items-center gap-3 text-cyan-100/80">
+            <svg className="w-5 h-5 text-cyan-200" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/><path d="M12 6v6l4 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            <span>Пн–Пт: 8:00–20:00, Сб: 9:00–15:00</span>
+            <span className="hidden md:inline">|</span>
+            <span>&copy; {new Date().getFullYear()} Все права защищены.</span>
+          </div>
         </div>
       </footer>
     </div>
