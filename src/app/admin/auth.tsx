@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 
-const ADMIN_PASSWORD = "admin123"; // Замените на свой пароль
+const ADMIN_PASSWORD = ""; // Замените на свой пароль
 
 
 
